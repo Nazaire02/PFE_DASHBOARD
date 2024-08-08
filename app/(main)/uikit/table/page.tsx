@@ -172,6 +172,7 @@ const MyDataTable = () => {
                         {!selectedTransaction.userOrig ? (
                             <div>
                                 <p>Nom: Kacou N'Dah Paul</p>
+                                <p>Pays: CI</p>
                                 <p>Email: kacou@icloud.com</p>
                             </div>
                         ) : (
@@ -181,6 +182,7 @@ const MyDataTable = () => {
                         {!selectedTransaction.userDest ? (
                             <div>
                                 <p>Nom: DOGBO Yves</p>
+                                <p>Pays: CI</p>
                                 <p>Email: dogboyves@gmail.com</p>
                             </div>
                         ) : (
