@@ -5,17 +5,19 @@ import { DataTable } from 'primereact/datatable';
 import { InputText } from 'primereact/inputtext';
 import React, { useEffect, useState } from 'react';
 import { Badge } from 'primereact/badge';
+import { getTransactions } from '@/app/api/transaction';
 
 interface Transaction {
     id: number;
     type: string;
     amount: number;
     nameOrig: string;
-    oldBalanceOrig: number;
-    newBalanceOrig: number;
+    oldbalanceOrg: number;
+    newbalanceOrig: number;
     nameDest: string;
-    oldBalanceDest: number;
-    newBalanceDest: number;
+    oldbalanceDest: number;
+    newbalanceDest: number;
+    isFraud: string;
     status: 'Fraude' | 'Non fraude' | 'Suspect'; // Nouveau champ pour le statut
 }
 
@@ -24,25 +26,17 @@ const MyDataTable = () => {
     const [loading, setLoading] = useState(true);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
 
+
     useEffect(() => {
         // Simuler une récupération des données
-        setTimeout(() => {
-            setTransactions([
-                {
-                    id: 1,
-                    type: 'Virement',
-                    amount: 1500,
-                    nameOrig: 'Compte A',
-                    oldBalanceOrig: 5000,
-                    newBalanceOrig: 3500,
-                    nameDest: 'Compte B',
-                    oldBalanceDest: 2000,
-                    newBalanceDest: 3500,
-                    status: 'Fraude'
-                },
-            ]);
+        const fetchTransaction = async () => {
+            const transaction = await getTransactions(); // Supposons que getTransaction() renvoie une promesse
+            console.log(transaction);
+            setTransactions(transaction);
             setLoading(false);
-        }, 2000);
+        };
+
+        fetchTransaction();
     }, []);
 
     const clearFilter = () => {
@@ -69,12 +63,12 @@ const MyDataTable = () => {
 
     const statusBodyTemplate = (rowData: Transaction) => {
         let severity: 'success' | 'warning' | 'danger' = 'success';
-        if (rowData.status === 'Fraude') {
+        if (rowData.isFraud === '1') {
             severity = 'danger';
-        } else if (rowData.status === 'Suspect') {
-            severity = 'warning';
+        } else if (rowData.isFraud === '0') {
+            severity = 'success';
         }
-        return <Badge value={rowData.status} severity={severity} />;
+        return <Badge value={severity} severity={severity} />;
     };
 
     return (
@@ -121,17 +115,17 @@ const MyDataTable = () => {
                         loading={loading}
                         emptyMessage="Aucune transaction trouvée."
                         header={header}
-                        globalFilterFields={['type', 'amount', 'nameOrig', 'oldBalanceOrig', 'newBalanceOrig', 'nameDest', 'oldBalanceDest', 'newBalanceDest']}
+                        globalFilterFields={['type', 'amount', 'nameOrig', 'oldbalanceOrg', 'newbalanceOrig', 'nameDest', 'oldbalanceDest', 'newbalanceDest']}
                         filters={{ 'global': { value: globalFilterValue, matchMode: 'contains' } }}
                     >
                         <Column field="type" header="Type" filter filterPlaceholder="Rechercher par type" style={{ minWidth: '12rem' }} />
                         <Column field="amount" header="Montant" filter filterPlaceholder="Rechercher par montant" style={{ minWidth: '12rem' }} body={(rowData) => rowData.amount?.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) || ''} />
                         <Column field="nameOrig" header="Compte Origine" filter filterPlaceholder="Rechercher par compte origine" style={{ minWidth: '14rem' }} />
-                        <Column field="oldBalanceOrig" header="Ancien Solde Origine" filter filterPlaceholder="Rechercher par ancien solde origine" style={{ minWidth: '14rem' }} body={(rowData) => rowData.oldBalanceOrig?.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) || ''} />
-                        <Column field="newBalanceOrig" header="Nouveau Solde Origine" filter filterPlaceholder="Rechercher par nouveau solde origine" style={{ minWidth: '14rem' }} body={(rowData) => rowData.newBalanceOrig?.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) || ''} />
+                        <Column field="oldbalanceOrg" header="Ancien Solde Origine" filter filterPlaceholder="Rechercher par ancien solde origine" style={{ minWidth: '14rem' }} body={(rowData) => rowData.oldbalanceOrg?.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) || ''} />
+                        <Column field="newbalanceOrig" header="Nouveau Solde Origine" filter filterPlaceholder="Rechercher par nouveau solde origine" style={{ minWidth: '14rem' }} body={(rowData) => rowData.newbalanceOrig?.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) || ''} />
                         <Column field="nameDest" header="Compte Destination" filter filterPlaceholder="Rechercher par compte destination" style={{ minWidth: '14rem' }} />
-                        <Column field="oldBalanceDest" header="Ancien Solde Destination" filter filterPlaceholder="Rechercher par ancien solde destination" style={{ minWidth: '14rem' }} body={(rowData) => rowData.oldBalanceDest?.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) || ''} />
-                        <Column field="newBalanceDest" header="Nouveau Solde Destination" filter filterPlaceholder="Rechercher par nouveau solde destination" style={{ minWidth: '14rem' }} body={(rowData) => rowData.newBalanceDest?.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) || ''} />
+                        <Column field="oldbalanceDest" header="Ancien Solde Destination" filter filterPlaceholder="Rechercher par ancien solde destination" style={{ minWidth: '14rem' }} body={(rowData) => rowData.oldbalanceDest?.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) || ''} />
+                        <Column field="newbalanceDest" header="Nouveau Solde Destination" filter filterPlaceholder="Rechercher par nouveau solde destination" style={{ minWidth: '14rem' }} body={(rowData) => rowData.newbalanceDest?.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) || ''} />
                         <Column header="Statut" body={statusBodyTemplate} style={{ minWidth: '8rem' }} />
                     </DataTable>
                 </div>
